@@ -10,6 +10,7 @@
 
 #include <string>
 #include "statement.h"
+#include <set>
 using namespace std;
 
 /*
@@ -135,10 +136,26 @@ public:
 
    int getNextLineNumber(int lineNumber);
 
+/*
+ * Function: runProgram
+ */
+
+   void runProgram(EvalState &state);
+
+/*
+ * Function: listProgram
+ */
+
+   void listProgram();
+
+
 private:
+    std::set<int> line_table;
+    std::map<int, std::string> line_string;
+    std::map<int, Statement*> state_table;
+    std::map<int, std::string> option;
 
-// Fill this in with whatever types and instance variables you need
-
+    bool hasLine(int lineNumber) const;
 };
 
 #endif

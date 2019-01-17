@@ -26,9 +26,15 @@
  */
 
 class Statement {
+public:
+    int validator;
+    /*
+     * 0: ok
+     * 1: SYNTAX ERROR
+     * 2: INVALID NUMBER
+     */
 
 public:
-
 /*
  * Constructor: Statement
  * ----------------------
@@ -62,6 +68,7 @@ public:
 
    virtual void execute(EvalState & state) = 0;
 
+   void set_valid(int val);
 };
 
 /*
@@ -75,4 +82,65 @@ public:
  * specify its own destructor method to free that memory.
  */
 
+class LET : public Statement {
+public:
+    LET();
+    LET(std::string line);
+    ~LET();
+    void execute(EvalState &state);
+
+private:
+    std::string var;
+    Expression *exp;
+};
+
+class PRINT : public Statement {
+public:
+    PRINT();
+    PRINT(std::string line);
+    ~PRINT();
+    void execute(EvalState &state);
+
+private:
+    Expression *exp;
+};
+
+class INPUT : public Statement {
+public:
+    INPUT();
+    INPUT(std::string line);
+    ~INPUT();
+    void execute(EvalState &state);
+
+private:
+    std::string var;
+};
+
+class GOTO : public Statement {
+public:
+    GOTO();
+    GOTO(std::string line);
+    ~GOTO();
+    void execute(EvalState &state);
+
+    int line_number;
+};
+
+class IF : public Statement {
+public:
+    IF();
+    IF(std::string line);
+    ~IF();
+    void execute(EvalState &state);
+
+    int line_number;
+private:
+    /*
+     * < : -1
+     * = : 0
+     * > : 1
+     */
+    int if_number, op;
+    Expression *exp1, *exp2;
+};
 #endif
