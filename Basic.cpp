@@ -26,8 +26,8 @@ inline bool isDigit(char ch) {
     return ch >= '0' && ch <= '9';
 }
 
-int check_type(string str) {
-    for (size_t i = 0; i < str.length(); i++)
+int check_type(const string &str) {
+    for (int i = 0; i < (int)str.length(); i++)
         if (!isDigit(str[i]))
             return 0;
     return 1;
@@ -66,30 +66,38 @@ bool processLine(const string &line, Program &program, EvalState &state) {
    scanner.ignoreWhitespace();
    scanner.scanNumbers();
    scanner.setInput(line);
-
    string str = scanner.nextToken();
    int line_number;
 
-   if (check_type(str) == 1) {
+   //cout << "type is " << check_type(str) << endl;
+
+   if (!check_type(str)) {
        if (str == "LET") {
            LET let(line);
-           if (let.validator != 1)
+           if (let.validator == 1)
                cout << "SYNTAX ERROR" << endl;
            else
                let.execute(state);
        } else if (str == "PRINT") {
+           //cout << "goto print" << endl;
            PRINT print(line);
+           //cout << "goto execute" << endl;
            print.execute(state);
        } else if (str == "INPUT") {
            INPUT input(line);
-           input.execute(state);
+           if (input.validator == 0)
+               input.execute(state);
+           else
+               cout << "SYNTAX ERROR" << endl;
+           //cout << "finish return" << endl;
        } else if (str == "RUN")
            program.runProgram(state);
        else if (str == "LIST")
            program.listProgram();
-       else if (str == "CLEAR")
+       else if (str == "CLEAR") {
+           state.clear();
            program.clear();
-       else if (str == "QUIT")
+       } else if (str == "QUIT")
            return false;
        else if (str == "HELP")
            cout << "What help do you need?" << endl;
@@ -97,7 +105,16 @@ bool processLine(const string &line, Program &program, EvalState &state) {
            cout << "SYNTAX ERROR" << endl;
    } else { // line_number
        line_number = stringToInteger(str);
-       program.addSourceLine(line_number, line);
+       //cout << line_number << " " << scanner.hasMoreTokens() << endl;
+
+       if (scanner.hasMoreTokens()) {
+           //cout << "add" << endl;
+           program.addSourceLine(line_number, line);
+       } else {
+           //cout << "delete" << endl;
+           program.removeSourceLine(line_number);
+       }
    }
+   //cout << "go back to main" << endl;
    return true;
 }

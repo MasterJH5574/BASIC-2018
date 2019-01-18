@@ -50,7 +50,7 @@ void Program::addSourceLine(int lineNumber, string line) {
 }
 
 void Program::removeSourceLine(int lineNumber) {
-   if (hasLine(lineNumber))
+   if (!hasLine(lineNumber))
       return;
 
    if (state_table.find(lineNumber) != state_table.end()) {
@@ -96,6 +96,7 @@ bool Program::hasLine(int lineNumber) const {
 void Program::runProgram(EvalState &state) {
    int cur = getFirstLineNumber(), ne;
    while (1) {
+      //cout << "current line number = " << cur << endl;
       string opt = option[cur];
       if (opt == "REM")
          ne = getNextLineNumber(cur);
@@ -112,7 +113,10 @@ void Program::runProgram(EvalState &state) {
          ne = getNextLineNumber(cur);
       } else if (opt == "INPUT") {
          INPUT input(line_string[cur]);
-         input.execute(state);
+         if (input.validator == 0)
+            input.execute(state);
+         else
+            cout << "SYNTAX ERROR" << endl;
          ne = getNextLineNumber(cur);
       } else if (opt == "END")
          break;
@@ -131,11 +135,14 @@ void Program::runProgram(EvalState &state) {
          }
       } else if (opt == "IF") {
          IF If(line_string[cur]);
+         //cout << "go to deal with" << endl;
          if (If.validator != 0) {
             cout << "SYNTAX ERROR" << endl;
             ne = getNextLineNumber(cur);
          } else {
+            //cout << "go to execute" << endl;
             If.execute(state);
+            //cout << "line number = " << If.line_number << endl;
             if (If.line_number == -1)
                ne = getNextLineNumber(cur);
             else if (line_table.find(If.line_number) != line_table.end())

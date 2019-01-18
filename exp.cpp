@@ -118,12 +118,17 @@ int CompoundExp::eval(EvalState & state) {
    }
    int left = lhs->eval(state);
    int right = rhs->eval(state);
+   //cout << "left = " << left << endl;
+   //cout << "right = " << right << endl;
+   //cout << "op = " << op << endl;
    if (op == "+") return left + right;
    if (op == "-") return left - right;
    if (op == "*") return left * right;
    if (op == "/") {
-      if (right == 0)
+      if (right == 0) {
+         //cout << "goto throw error" << endl;
          error("DIVIDE BY ZERO");
+      }
       return left / right;
    }
    error("Illegal operator in expression");
