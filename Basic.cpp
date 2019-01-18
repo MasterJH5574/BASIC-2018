@@ -20,7 +20,7 @@ using namespace std;
 
 /* Function prototypes */
 
-void processLine(string line, Program & program, EvalState & state);
+bool processLine(const string &line, Program & program, EvalState & state);
 
 inline bool isDigit(char ch) {
     return ch >= '0' && ch <= '9';
@@ -38,16 +38,10 @@ int check_type(string str) {
 int main() {
     EvalState state;
     Program program;
-    cout << "Stub implementation of BASIC" << endl;
-    while (true) {
-        try {
-            processLine(getLine(), program, state);
-        } catch (ErrorException & ex) {
-            if (ex.getMessage() == "QUIT")
-                break;
-            cout << "Error: " << ex.getMessage() << endl;
-        }
-    }
+    //cout << "Stub implementation of BASIC" << endl;
+    while (true)
+        if (!processLine(getLine(), program, state))
+            break;
     return 0;
 }
 
@@ -64,7 +58,10 @@ int main() {
  * or one of the BASIC commands, such as LIST or RUN.
  */
 
-void processLine(string line, Program &program, EvalState &state) {
+bool processLine(const string &line, Program &program, EvalState &state) {
+   if (line.empty())
+       return false;
+
    TokenScanner scanner;
    scanner.ignoreWhitespace();
    scanner.scanNumbers();
@@ -81,25 +78,26 @@ void processLine(string line, Program &program, EvalState &state) {
            else
                let.execute(state);
        } else if (str == "PRINT") {
-           
+           PRINT print(line);
+           print.execute(state);
        } else if (str == "INPUT") {
-
-       } else if (str == "RUN") {
-
-       } else if (str == "LIST") {
-
-       } else if (str == "CLEAR") {
-
-       } else if (str == "QUIT") {
-
-       } else if (str == "HELP")
+           INPUT input(line);
+           input.execute(state);
+       } else if (str == "RUN")
+           program.runProgram(state);
+       else if (str == "LIST")
+           program.listProgram();
+       else if (str == "CLEAR")
+           program.clear();
+       else if (str == "QUIT")
+           return false;
+       else if (str == "HELP")
            cout << "What help do you need?" << endl;
-       else {
+       else
            cout << "SYNTAX ERROR" << endl;
-           return;
-       }
    } else { // line_number
        line_number = stringToInteger(str);
        program.addSourceLine(line_number, line);
    }
+   return true;
 }
