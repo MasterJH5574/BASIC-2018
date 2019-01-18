@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.5.1)
+project(Basic)
+set(CMAKE_CXX_STANDARD 14)
+add_compile_options(-O2)
+add_executable(code Basic/Basic.cpp Basic/evalstate.cpp Basic/exp.cpp Basic/parser.cpp Basic/program.cpp Basic/statement.cpp StanfordCPPLib/error.cpp StanfordCPPLib/hashmap.cpp StanfordCPPLib/lexicon.cpp StanfordCPPLib/random.cpp StanfordCPPLib/simpio.cpp StanfordCPPLib/strlib.cpp StanfordCPPLib/tokenscanner.cpp)
